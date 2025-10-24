@@ -1,5 +1,7 @@
+import pyganim
 from PIL.FontFile import WIDTH
 from pygame import *
+from pyganim import *
 
 MOVE_SPEED = 7
 WIDTH = 22
@@ -7,6 +9,16 @@ HEIGHT = 32
 COLOR = "#888888"
 JUMP_POWER = 10
 GRAVITY = 0.35
+
+# Переменные для анимации
+ANIMATON_DELAY = 0.1    # Скорость смены кадров
+ANIMATION_RIGHT = [('sprites/pig/pig_right_1.png'),
+                   ('sprites/pig/pig_right_2.png')]
+ANIMATION_LEFT = [('sprites/pig/pig_left_1.png'),
+                  ('sprites/pig/pig_left_2.png')]
+ANIMATION_JUMP_LEFT = [('sprites/pig/pig_jump_left.png')]
+ANIMATION_JUMP_RIGHT = [('sprites/pig/pig_jump_right.png')]
+ANIMATION_STAY = [('sprites/pig/pig_stay.png')]
 
 class Player(sprite.Sprite):
 
@@ -20,6 +32,26 @@ class Player(sprite.Sprite):
         self.rect = Rect(x, y, WIDTH, HEIGHT)   # Прямоугольный объект
         self.yvel = 0   # Скорость вертикального перемещения
         self.onGround = False   # На земле?
+
+        self.image.set_colorkey(color=COLOR)    # Делаем фон прозрачным
+        # Анимация движения вправо
+        boltAnim = []
+        for anim in ANIMATION_RIGHT:
+            boltAnim.append((anim, ANIMATON_DELAY))
+        self.boltAnimRight = pyganim.PygAnimation(boltAnim)
+        self.boltAnimRight.play()
+        # Анимация движения влево
+        boltAnim = []
+        for anim in ANIMATION_LEFT:
+            boltAnim.append((anim, ANIMATON_DELAY))
+        self.boltAnimLeft = pyganim.PygAnimation(boltAnim)
+        self.boltAnimLeft.play()
+
+        self.boltAnimStay = pyganim.PygAnimation(ANIMATION_STAY)
+        self.boltAnimStay.play()
+        self.boltAnimStay.blit(self.image, (0, 0))  # По умолчанию стоим
+
+
 
     def update(self, left, right, up, platforms):
         if up:

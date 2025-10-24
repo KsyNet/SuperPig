@@ -1,5 +1,6 @@
 import pygame
-from pygame import *
+import pyganim
+
 from player import *
 from blocks import *
 
