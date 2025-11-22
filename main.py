@@ -1,25 +1,29 @@
 import pygame
 import pyganim
+from pygame import *
 
 from player import *
 from blocks import *
+from camera import *
 
-pygame.init()
+
 # Объявляем переменные-константы для экрана
-WIN_WIDHT = 800
-WIN_HEIGTH = 640
+WIN_WIDHT = 800 # Ширина создаваемого окна
+WIN_HEIGTH = 640 # Высота
 DISPLAY = (WIN_WIDHT, WIN_HEIGTH)
 BACKGROUND_COLOR = "#004400"
 
 def main():
+    pygame.init()
     screen = pygame.display.set_mode(DISPLAY)
     pygame.display.set_caption("Hollow Night")
     bg = Surface((WIN_WIDHT, WIN_HEIGTH))
+
     bg.fill(color=BACKGROUND_COLOR)
 
     # Объявляем персонажа
     hero = Player(55, 55)   # Создаём персонажа по координатам
-    left = right = False    # По умолчанию стоим
+    left, right = False, False    # По умолчанию стоим
     up = False
 
     entities = pygame.sprite.Group()    # Все объекты
@@ -28,26 +32,30 @@ def main():
 
     # Объявляем уровень
     level = [
-        "-------------------------",
-        "-                       -",
-        "-                       -",
-        "-                       -",
-        "-            --         -",
-        "-                       -",
-        "--                      -",
-        "-                       -",
-        "-                   --- -",
-        "-                       -",
-        "-                       -",
-        "-      ---              -",
-        "-                       -",
-        "-   -----------         -",
-        "-                       -",
-        "-                -      -",
-        "-                   --  -",
-        "-                       -",
-        "-                       -",
-        "-------------------------"]
+        "----------------------------------",
+        "-                                -",
+        "-                       --       -",
+        "-                                -",
+        "-            --                  -",
+        "-                                -",
+        "--                               -",
+        "-                                -",
+        "-                   ----     --- -",
+        "-                                -",
+        "--                               -",
+        "-                                -",
+        "-                            --- -",
+        "-                                -",
+        "-                                -",
+        "-      ---                       -",
+        "-                                -",
+        "-   -------         ----         -",
+        "-                                -",
+        "-                         -      -",
+        "-                            --  -",
+        "-                                -",
+        "-                                -",
+        "----------------------------------"]
 
     timer = pygame.time.Clock()
 
@@ -65,6 +73,13 @@ def main():
         y += PLATFORM_HEIGHT  # то же самое и с высостой
         x = 0  # на каждой новой строчке начинаем с нуля
 
+    # Высчитываем фактическую ширину уровня
+    total_level_widht = len(level[0]) * PLATFORM_WIDTH
+    # Высчитываем фактическую высоту уровня
+    total_level_heigth = len(level) * PLATFORM_HEIGHT
+
+    camera = Camera(Camera.camera_configure, total_level_widht, total_level_heigth)
+
     while 1:
         timer.tick(60)
         for e in pygame.event.get(): # Обрабатываем событие
@@ -75,6 +90,7 @@ def main():
                 right = True
             if e.type == KEYDOWN and e.key == K_SPACE:
                 up = True
+
             if e.type == KEYUP and e.key == K_RIGHT:
                 right = False
             if e.type == KEYUP and e.key == K_LEFT:
@@ -85,9 +101,11 @@ def main():
                 raise SystemExit("QUIT")
         screen.blit(bg, (0, 0)) # Каждую итерацию перерисовываем
 
+        camera.update(hero) # Центрируем камеру относительно персонажа
         hero.update(left, right, up, platforms)    # Передвижение
-        entities.draw(screen)   # Отображение всего
-
+        # entities.draw(screen)   # Отображение всего
+        for e in entities:
+            screen.blit(e.image, camera.apply(e))
 
         pygame.display.update()
 
