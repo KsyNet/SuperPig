@@ -13,18 +13,14 @@ class Camera(object):
         self.state = self.camera_func(self.state, target.rect)
 
     # Начальное конфигурирование камеры
-    def camera_configure(camera,target_rect):
-        l, t, _, _ = target_rect
-        _, _, w, h = camera
-        l, t = -l + WIN_WIDHT / 2, -t + WIN_HEIGTH / 2
+def camera_configure(camera,target_rect):
+    l, t, _, _ = target_rect
+    _, _, w, h = camera
+    l, t = -l+WIN_WIDHT / 2, -t+WIN_HEIGTH / 2
 
-        # Не движемся дальше левой границы
-        l = min(0, l)
-        # Не движемся дальше правой границы
-        t = max(-(camera.width - WIN_WIDHT), l)
-        # Не движемся дальше нижние границы
-        t = min(0, t)
-        # Не движемся дальше верхней граиницы
-        t = max(-(camera.height - WIN_HEIGTH), t)
+    l = min(0, l)                           # Не движемся дальше левой границы
+    l = max(-(camera.width-WIN_WIDHT), l)   # Не движемся дальше правой границы
+    t = max(-(camera.height-WIN_HEIGTH), t) # Не движемся дальше нижней границы
+    t = min(0, t)                           # Не движемся дальше верхней границы
 
-        return Rect(l, t, w, h)
+    return Rect(l, t, w, h)
